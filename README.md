@@ -32,3 +32,10 @@ Estes são os parametros que minimamente você deve adicionar ao /etc/mongod.con
   
   `     keyFile: /mongodb/mongodb-keyfile`
 
+## Cluster configure
+
+1. Adicione um endereço DNS ao IP fisico de cada servers. Por exemplo db-mongo-poca.domain.in, db-mongo-pocb.domain.in, db-mongo-pocc.domain.in;
+2. Garanta que todos os server possuem conexão entre si pela porta 27017;
+3. Garanta que o arquivo `/mongodb/mongodb-keyfile` está disponivel em todos os server com a permissão de leitura apenas (chmod 400 /mongodb/mongodb-keyfile);
+4. Ative o mongod em todos os servers `service mongod start`;
+5. Conecte-se no primeiro mongo pela cli e execute os comandos abaixo:
