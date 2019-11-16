@@ -14,7 +14,6 @@ Estes são os parametros que minimamente você deve adicionar ao /etc/mongod.con
   
   `net:`
   
-  
   `     port: 27017`
   
   `     bindIp: 0.0.0.0  # Listen to local interface only, comment to listen on all interfaces. `
@@ -26,7 +25,10 @@ Estes são os parametros que minimamente você deve adicionar ao /etc/mongod.con
   
   `     replSetName: RS`
   
+  
   `security:`
+  
   `     authorization: enabled`
+  
   `     keyFile: /mongodb/mongodb-keyfile`
 
