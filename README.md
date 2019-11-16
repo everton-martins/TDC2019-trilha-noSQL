@@ -116,3 +116,5 @@ Estes são os parametros que minimamente você deve adicionar ao /etc/mongod.con
 
   Se configurarmos um membro como Vote=0, ele obrigatóriamente não poderá assumir como primário e seu prority será 0 também.
   Essa configuração se aplica em caso de termos um membro em uma região remota, com grande latência, que suporta um LAG, e atende, por exemplo, as leituras de uma aplicação específica.
+
+### settings.heartbeatTimeoutSecs & settings.electionTimeoutMillis
