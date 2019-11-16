@@ -25,6 +25,8 @@ Estes são os parametros que minimamente você deve adicionar ao /etc/mongod.con
   
   `     replSetName: RS`
   
+  `     enableMajorityReadConcern: false`
+  
   
   `security:`
   
@@ -44,39 +46,73 @@ Estes são os parametros que minimamente você deve adicionar ao /etc/mongod.con
   
   `  _id : "RS",`
   
-	`members: [`
+  `members: [`
   
-	`	{ _id: 0, host: "db-mongo-poca.domain.in:27017" },`
+  `  { _id: 0, host: "db-mongo-poca.domain.in:27017" },`
   
- 	`	{ _id: 1, host: "db-mongo-pocb.domain.in:27017" },`
+  ` { _id: 1, host: "db-mongo-pocb.domain.in:27017" },`
   
-	`]`
+  ` ] `
   
-	`})`
+  ` }) `
   
-	`rs.conf()`
+  ` rs.conf() `
   
-	`rs.status()`
+  ` rs.status() `
   
   6. Crie um usuário root
   
-    `use admin`
+  ` use admin`
     
-    `db.createUser( `
+  ` db.createUser( `
     
-    `{ `
+  ` { `
     
-    `  user: "root", `
+  `  user: "root", `
     
-    `  pwd: "superuser", `
+  `  pwd: "superuser", `
     
-    `  roles: [{"role":"root","db":"admin"}] `
+  `  roles: [{"role":"root","db":"admin"}] `
     
- `} `
+  ` } `
  
- `) `
+  ` ) `
  
+ 7. Agora você pode adicionar o seu nodo arbitro.
  
-## Read Concern "majority"
+  `rs.addArb("db-mongo-pocc.domain.in:27017")`
+  
+  `rs.config()`
+  
+  Ao executar o config novamente você verá que ele está com os parametros Vote=1, priority=0, arbiterOnly=true. Agora vamos torna-lo hidden para os clientes que conectarem no cluster.
+  
+  `cfg = rs.conf()`
+  
+  `cfg.members[2].hidden = true`
+  
+  `rs.reconfig(cfg)`
+
+## Extras
+
+### Read Concern "majority"
   
   Esta feature garante que o dado lido foi escrito na maioria dos membros do cluster. No exemplo acima ela foi desabilitada pois existem apenas 2 membros que possuem dados, e ema caso de queda de um deles haverá pressão de IO no nodo restante.
+  Indico a leitura da documentação a seguir: https://docs.mongodb.com/manual/reference/read-concern/
+  
+### Priority
+
+  Existem casos em que é importante ter um nodo com maior prioridade para se tornar o primário, por exemplo, quando temos um nodo com maior capacidade, ou está mais 'proximo' da aplicação que realiza escrita.
+  Neste caso podemos configurá-lo com maior prioridade.
+  
+  `cfg = rs.conf()`
+  
+  `cfg.members[1].priority = 2`
+  
+  `rs.reconfig(cfg)`
+
+  https://docs.mongodb.com/manual/tutorial/adjust-replica-set-member-priority/
+  
+### nonVote, secondary only
+
+  Se configurarmos um membro como Vote=0, ele obrigatóriamente não poderá assumir como primário e seu prority será 0 também.
+  Essa configuração se aplica em caso de termos um membro em uma região remota, com grande latência, que suporta um LAG, e atende, por exemplo, as leituras de uma aplicação específica.
