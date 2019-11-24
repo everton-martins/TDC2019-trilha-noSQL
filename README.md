@@ -124,6 +124,11 @@ Estes são os parametros que minimamente você deve adicionar ao /etc/mongod.con
   Indico a leitura da documentação a seguir: https://docs.mongodb.com/manual/reference/write-concern/
 
 
+### Protocol Version
+
+  A partir da versão 4.0 não é mais suportado a versão 0 do protocolo (https://docs.mongodb.com/manual/reference/replica-set-protocol-versions/)
+
+
 ### Priority
 
   Existem casos em que é importante ter um nodo com maior prioridade para se tornar o primário, por exemplo, quando temos um nodo com maior capacidade, ou está mais 'proximo' da aplicação que realiza escrita.
