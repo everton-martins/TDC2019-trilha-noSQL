@@ -92,13 +92,31 @@ Estes são os parametros que minimamente você deve adicionar ao /etc/mongod.con
   
   `rs.reconfig(cfg)`
 
+
 ## Extras
 
 ### Read Concern "majority"
   
-  Esta feature garante que o dado lido foi escrito na maioria dos membros do cluster. No exemplo acima ela foi desabilitada pois existem apenas 2 membros que possuem dados, e ema caso de queda de um deles haverá pressão de IO no nodo restante.
+  Esta feature garante que o dado lido foi escrito na maioria dos membros do cluster. No exemplo acima ela foi desabilitada pois existem apenas 2 membros que possuem dados, e em caso de queda de um deles haverá pressão de IO no nodo restante.
+
   Indico a leitura da documentação a seguir: https://docs.mongodb.com/manual/reference/read-concern/
   
+### Write Concern
+
+  É utilizado para garantir escrita do dado nos nodos do cluster, é composto de três parametros:
+  
+  W: que define a quantidade de nodos que receberão este dado, antes que o cluster devolva um ACK para a aplicação. Pode conter:
+    um valor numérico de 0 a N: que indica a quantidade de nodos que receberão a escrita, antes de retornar o ACK;
+    uma string "majority": que significa que o dados será escrito na maioria dos nodos, antes de retornar o ACK;
+    uma string que define o conjunto de nodos por tag (https://docs.mongodb.com/manual/tutorial/configure-replica-set-tag-sets/#configure-custom-write-concern)
+    
+  J: true ou false, que indica que o valor deve ser escrito em disco (journal), antes do ACK.
+  
+  wtimeout: time out da escrita.
+
+  Indico a leitura da documentação a seguir: https://docs.mongodb.com/manual/reference/write-concern/
+
+
 ### Priority
 
   Existem casos em que é importante ter um nodo com maior prioridade para se tornar o primário, por exemplo, quando temos um nodo com maior capacidade, ou está mais 'proximo' da aplicação que realiza escrita.
@@ -111,10 +129,14 @@ Estes são os parametros que minimamente você deve adicionar ao /etc/mongod.con
   `rs.reconfig(cfg)`
 
   https://docs.mongodb.com/manual/tutorial/adjust-replica-set-member-priority/
-  
+
+
 ### nonVote, secondary only
 
-  Se configurarmos um membro como Vote=0, ele obrigatóriamente não poderá assumir como primário e seu prority será 0 também.
-  Essa configuração se aplica em caso de termos um membro em uma região remota, com grande latência, que suporta um LAG, e atende, por exemplo, as leituras de uma aplicação específica.
+  Se configurarmos um membro como Vote=0, ele obrigatóriamente não poderá assumir como primário e sua prioridade será 0 também.
+  Essa configuração se aplica em caso de termos um membro em uma região remota, com grande latência, que suporta LAG, e atende, por exemplo, as leituras de uma aplicação específica.
+
 
 ### settings.heartbeatTimeoutSecs & settings.electionTimeoutMillis
+
+  Respectivamente tempo para determinar que um membro está inacessível e tempo para determinar que o primary está fora e eleger um novo primary. Valores altos tornarão o failover lento, baixo valores podem causar failover desnecessários.
